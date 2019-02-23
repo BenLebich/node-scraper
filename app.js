@@ -4,7 +4,7 @@ var request = require('request');
 //create a server object:
 http.createServer(function (req, res) {
 
-  request('http://www.benarea.com/', function (error, response, body) {
+  request('https://www.reddit.com', function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var imageLinks = scrapeImgsHTML(body);
       var htmlRes = "<html><head><title>Image Scraper</title></head><body>"
