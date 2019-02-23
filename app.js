@@ -1,28 +1,54 @@
 var http = require('http');
 var request = require('request');
+var url = require('url');
+var fs = require('fs');
 
 //create a server object:
-http.createServer(function (req, res) {
-
-  request('https://www.reddit.com', function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var imageLinks = scrapeImgsHTML(body);
-      var htmlRes = "<html><head><title>Image Scraper</title></head><body>"
-      for (var i = 0; i < imageLinks.length; i++) {
-        htmlRes +="<div>"
-        htmlRes +="<h4>"+imageLinks[i]+"</h4>"
-        htmlRes +="<img width='600px' src='"+ imageLinks[i] +"'>"
-        htmlRes +="</div>"
-      }
-      htmlRes += "</body></html>"
-      res.write(htmlRes);
-      res.end();
+fs.readFile('./form.html', function(err, html) {
+  if (err) {throw err;}
+  http.createServer(function (req, res) {
+    if (req.url != '/favicon.ico') {
+      var q = url.parse(req.url, true);
+      var qdata = q.query;
+      console.log(qdata);
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      res.write(html);
+      request(qdata.url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          var imageLinks = scrapeImgsHTML(body);
+          var htmlRes = "<html><head><title>Image Scraper</title></head><body>"
+          for (var i = 0; i < imageLinks.length; i++) {
+            htmlRes +="<div>"
+            htmlRes +="<h4>"+imageLinks[i]+"</h4>"
+            htmlRes +="<img width='600px' src='"+ imageLinks[i] +"'>"
+            htmlRes +="</div>"
+          }
+          htmlRes += "</body></html>"
+          res.write(htmlRes);
+          res.end();
+        }
+      });
     }
-  });
-  
-}).listen(process.env.PORT || 80);
+  }).listen(process.env.PORT || 80);
+});
 
 
+/*request('https://www.reddit.com', function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var imageLinks = scrapeImgsHTML(body);
+        var htmlRes = "<html><head><title>Image Scraper</title></head><body>"
+        htmlRes += html;
+        for (var i = 0; i < imageLinks.length; i++) {
+          htmlRes +="<div>"
+          htmlRes +="<h4>"+imageLinks[i]+"</h4>"
+          htmlRes +="<img width='600px' src='"+ imageLinks[i] +"'>"
+          htmlRes +="</div>"
+        }
+        htmlRes += "</body></html>"
+        res.write(htmlRes);
+        res.end();
+      }
+});*/
 
 function scrapeImgsHTML (htmlData) {
     var images = {
