@@ -4,14 +4,14 @@ var request = require('request');
 //create a server object:
 http.createServer(function (req, res) {
 
-  request('http://www.benarea.com/', function (error, response, body) {
+  request('benarea.com', function (error, response, body) {
     if (!error && response.statusCode == 200) {
       var imageLinks = scrapeImgsHTML(body);
       var htmlRes = "<html><head><title>Image Scraper</title></head><body>"
       for (var i = 0; i < imageLinks.length; i++) {
         htmlRes +="<div>"
         htmlRes +="<h4>"+imageLinks[i]+"</h4>"
-        htmlRes +="<img width='600px' src='"+ imageLinks[i] +"'>"
+        htmlRes +="<img width='400px' src='"+ imageLinks[i] +"'>"
         htmlRes +="</div>"
       }
       htmlRes += "</body></html>"
